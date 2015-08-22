@@ -1,7 +1,7 @@
 /**
  * LOCN SPARQL processor is part of the SPARQL Processing Library.
  * It has been developed in the context of the PON project PRISMA - PiattafoRme cloud Interoperbili per SMArt-government,
- * and it is release under the CC-BY 2.0 license (see http://creativecommons.org/licenses/by/2.0/)
+ * and it is release under the CC-BY 4.0 license (https://creativecommons.org/licenses/by/4.0/)
  *
  * The processor and the helper methods allow to query, filter and process instances
  * of the  Location class, which is defined in the LOCN vocabolary:
@@ -10,6 +10,7 @@
  *
  * @author Cristiano Longo
  * @author Mirko Raimondo Aiello
+ * @version 1.1
  */
 
 /**
