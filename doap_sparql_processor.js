@@ -74,7 +74,7 @@ function DOAPProcessor(additionalPrefixes, additionalConstraints)
  * Process a query result-set row. Do not override.
  */
 DOAPProcessor.prototype.process = function(row){
-	var item = new Project(row.item, row.name, row.license, row.shortdesc);
+	var item = new Project(row.item, row.name.value, row.license, row.shortdesc.value);
 	if (row.homepage!=null)
 		item.homepage=row.homepage.value;
 	if (row.gitrepo!=null)
