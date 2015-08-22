@@ -6,10 +6,8 @@
  * defined in the DOAP (Description Of A Project) vocabulary, see 
  * https://github.com/edumbill/doap . 
  *
- * Processor behaviour must be customized by means of an instance of 
- * DOAPProjectProcessorSpecification, which speficies how the Project 
- * objects has to be processed and eventual  additional selection mechanism 
- * in the query.
+ * Processor behaviour must be customized by overriding the processProject method.
+ * It can be used with the sparql_query method.
  * 
  * @author Cristiano Longo
  * @version 0.9
@@ -51,10 +49,10 @@ function Project(uri, name, license, shortdesc){
  * by the variable ?item.
  *
  */
-function DOAPQueryProcessor(additionalPrefixes, additionalConstraints)
+function DOAPProcessor(additionalPrefixes, additionalConstraints)
 {
 	this.query = "PREFIX doap:<http://usefulinc.com/ns/doap#>"	
-	if (ladditionalPrefixes!=null)
+	if (additionalPrefixes!=null)
 		this.query+=locationQueryProcessor.additionalPrefixes+"\n";
 	
 	this.query+="SELECT DISTINCT ?item ?name ?shortdesc ?homepage ?desc ?gitrepo WHERE {\n"+
@@ -75,7 +73,7 @@ function DOAPQueryProcessor(additionalPrefixes, additionalConstraints)
 /**
  * Process a query result-set row. Do not override.
  */
-DOAPQueryProcessor.prototype.process = function(row){
+DOAPProcessor.prototype.process = function(row){
 	var item = new Project(row.item, row.name, row.license, row.shortdesc);
 	if (row.homepage!=null)
 		item.homepage=row.homepage.value;
@@ -89,13 +87,13 @@ DOAPQueryProcessor.prototype.process = function(row){
 /**
  * Process a project. Override this to handle projects.
  */
-DOAPQueryProcessor.prototype.processProject = function(project){
+DOAPProcessor.prototype.processProject = function(project){
 	alert("Poject "+project.name+" not handled!");
 }
 
 /**
  * Processing ended, do nothing. Override this if appropriate
  */
-DOAPQueryProcessor.prototype.flush = function(){
+DOAPProcessor.prototype.flush = function(){
 	//intentionally empty
 }
