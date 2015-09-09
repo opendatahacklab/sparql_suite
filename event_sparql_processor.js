@@ -156,7 +156,7 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
 	"\tOPTIONAL {?item foaf:depiction ?depiction} .\n"+
 	"\tOPTIONAL {?hasB time:xsdDateTime ?timeEnd} .\n"+
 	"\tOPTIONAL {?item foaf:logo ?logo} .\n"+
-	"\tOPTIONAL {?post sioc:about ?itemt .\n"+
+	"\tOPTIONAL {?post sioc:about ?item .\n"+
     "\t\t?post dc:title ?ptitle .\n"+
     "\t\t?post rdfs:label ?plabel .\n"+
     "\t\t?post sioc:has_creator ?pc .\n"+

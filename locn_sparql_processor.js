@@ -51,7 +51,7 @@ function Location(address, latitude, longitude){
  */
 Location.prototype.addLocatedItem= function (item){
 	this.locatedItems[this.locatedItems.length]=item;
-}
+};
 
 /**
  * A query processor, to be used with the sparl_query function
@@ -114,7 +114,7 @@ LOCNQueryProcessor.prototype.process = function(row){
 		this.location=new Location(address, latitude, longitude);
 		this.location.addLocatedItem(item);
 	}
-}
+};
 
 /**
  * Processing ended, flush the last location
@@ -123,7 +123,7 @@ LOCNQueryProcessor.prototype.flush = function(){
 	this.processor.process(this.location);
 	this.location=null;
 	this.processor.flush();	
-}
+};
 
 //GOOGLE MAPS LOCN PROCESSOR
 
@@ -175,12 +175,14 @@ GoogleMapsLocationQueryProcessor.prototype.process = function(location)
 	google.maps.event.addListener(marker, 'click', function() {
 		infowindow.open(this.map,marker);
 	});	
-}
+};
 
 /**
  * no flushing is required.
  */
-GoogleMapsLocationQueryProcessor.prototype.flush = function(location){}
+GoogleMapsLocationQueryProcessor.prototype.flush = function(location){
+	//intentionally empty
+};
 
 /**
  * A specialization of LOCNQueryProcessor to draw locations on a map using the Google Maps API.
@@ -237,12 +239,14 @@ LeafletMapsLocationQueryProcessor.prototype.process = function(location) {
 	
 	var marker = L.marker([location.latitude, location.longitude]).addTo(this.map);
 	marker.bindPopup(contentString);
-}
+};
 
 /**
  * no flushing is required.
  */
-LeafletMapsLocationQueryProcessor.prototype.flush = function(location){}
+LeafletMapsLocationQueryProcessor.prototype.flush = function(location){
+	//intentionally empty
+};
 
 /**
  * A specialization of LOCNQueryProcessor to draw locations on a map using the Google Maps API.
