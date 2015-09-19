@@ -87,7 +87,7 @@ function initDataset(row){
 	if (row.landingPage != null)
 		d.landingPage = row.landingPage.value;
 	if (row.theme!=null && row.themeName!=null)
-		d.themes[0]=new Theme(row.theme, row.themeName.value);
+		d.themes[0]=new Theme(row.theme.value, row.themeName.value);
 	return d;
 }
 /**
@@ -101,7 +101,7 @@ DCATProcessor.prototype.process = function(row) {
 		this.current = initDataset(row);		
 	} else {
 		if (row.theme!=null && row.themeName!=null)
-			this.current.themes[this.current.themes.length]=new Theme(row.theme, row.themeName.value);
+			this.current.themes[this.current.themes.length]=new Theme(row.theme.value, row.themeName.value);
 	}
 };
 
@@ -153,12 +153,12 @@ function createDCAT2HTMLProcessor(containerElement, loadingElement,
 		containerElement.insertBefore(article, loadingElement);
 			
 		var title = document.createElement("h2");
-	    title.appendChild(document.createTextNode(dataset.title));	
+	    title.appendChild(document.createTextNode(htmlentities(dataset.title)));	
 		article.appendChild(title);
 		
 		if (dataset.description!=null && dataset.description.length>0){
 			var description = document.createElement("p");
-			description.appendChild(document.createTextNode(dataset.description));
+			description.appendChild(document.createTextNode(htmlentities(dataset.description)));
 			article.appendChild(description);
 		}
 		
@@ -172,7 +172,7 @@ function createDCAT2HTMLProcessor(containerElement, loadingElement,
 				var theme =document.createElement("a");
 				themes.appendChild(theme);
 				theme.href=dataset.themes[i].uri;
-				theme.appendChild(document.createTextNode(dataset.themes[i].label));
+				theme.appendChild(document.createTextNode(htmlentities(dataset.themes[i].label)));
 				if (i<dataset.themes.length-1)
 					themes.appendChild(document.createTextNode(" - "));
 			}
