@@ -11,29 +11,7 @@
  * @author Mirko Raimondo Aiello
  */
 
-/**
- * An arbitrary classification of a space/time region, by a
- * cognitive agent. An event may have actively participating agents,
- * passive factors, products, and a location in space/time.
- * 
- * @param uri the URI of the Event
- * @param eventName name of the event
- * @param logo a logo of the event, may be null
- * @param timeStart the start time of the event
- * @param timeEnd the end time of the event
- * @param address the physical address of the event
- */ 
-function Event(uri, eventName, logo, timeStart, timeEnd, address){
-	this.URI=uri;
-	this.eventName=eventName;
-	this.logo=logo;
-	this.timeStart=timeStart;
-	this.timeEnd=timeEnd;
-	this.address=address;
-	this.participants=[];
-	this.posts=[];
-	this.photos=[];
-}
+//some objects related to events
 
 /**
  * Relates an event to an active agent (a person, an organization, ... )
@@ -70,6 +48,51 @@ function Photo(depiction){
 }
 
 /**
+ * A (private) function to add event properties read by a row of the query result.
+ */
+var setEventProperties= function(event, row){
+	var participant = row.agent==null ? null : row.agent.value;
+	var participantName = row.partname==null ? null : row.partname.value;
+	var post = row.post==null ? null : row.post.value;
+	var postTitle = row.ptitle==null ? null : row.ptitle.value;
+	var postLabel = row.plabel==null ? null : row.plabel.value;
+	var postCreator = row.pcreat==null ? null : row.pcreat.value;
+	var depiction = row.depiction==null ? null : row.depiction.value;
+
+	if (participant!=null)
+		event.addParticipantItem (new Participant(participant, participantName));
+	if (post!=null)
+		event.addPostItem (new Post(post, postTitle, postLabel, postCreator));
+	if(depiction!=null)
+		event.addPhotoItem (new Photo(depiction));
+
+};
+/**
+ * An arbitrary classification of a space/time region, by a
+ * cognitive agent. An event may have actively participating agents,
+ * passive factors, products, and a location in space/time.
+ * 
+ * Create an event with the specified URI by reading its properties from a resultset row
+ * 
+ * @param uri the URI of the Event
+ * @param row
+ */ 
+function Event(uri, row){
+	this.URI=uri;
+	this.eventName=row.itemlabel.value;
+	this.logo=row.logo==null ? null : row.logo.value;
+	this.timeStart=row.timeStart.value;
+	this.timeEnd=row.timeEnd==null ? null : row.timeEnd.value;
+	this.address=row.address.value;
+	this.participants=[];
+	this.posts=[];
+	this.photos=[];
+	
+	setEventProperties(this, row);
+}
+
+
+/**
  * Associate an item to a participant
  *
  * @param item an instance of Participant
@@ -87,17 +110,14 @@ Event.prototype.addParticipantItem = function (item) {
  * Associate an item to a post
  *
  * @param item an instance of Post
- * @param eventReferred the event to which it refers
  */
-Event.prototype.addPostItem = function (item, eventReferred) {
-	if (this.URI == eventReferred.URI) {
-		var find = false;
-		for (var i = 0; i < this.posts.length; i++)
-			if (this.posts[i].URI == item.URI)
-				find = true;
-		if (!find)
-			this.posts[this.posts.length]=item;
-	}
+Event.prototype.addPostItem = function (item) {
+	var found = false;
+	for (var i = 0; i < this.posts.length; i++)
+		if (this.posts[i].URI == item.URI)
+			found = true;
+	if (!found)
+		this.posts[this.posts.length]=item;
 };
 
 /**
@@ -177,38 +197,14 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
 EventQueryProcessor.prototype.process = function(row)
 {
 	var eventURI = row.item.value;
-	var eventName = row.itemlabel.value;
-	var logo = row.logo==null ? null : row.logo.value;
-	var timeStart = row.timeStart.value;
-	var timeEnd = row.timeEnd==null ? null : row.timeEnd.value;
-	var address = row.address.value;
-	var participant = row.agent==null ? null : row.agent.value;
-	var participantName = row.partname==null ? null : row.partname.value;
-	var post = row.post==null ? null : row.post.value;
-	var postTitle = row.ptitle==null ? null : row.ptitle.value;
-	var postLabel = row.plabel==null ? null : row.plabel.value;
-	var postCreator = row.pcreat==null ? null : row.pcreat.value;
-	var depiction = row.depiction==null ? null : row.depiction.value;
 	
     //first point
-	if (this.event==null){
-		this.event=new Event(eventURI, eventName, logo, timeStart, timeEnd, address);
-		if (participant!=null)
-			this.event.addParticipantItem (new Participant(participant, participantName));
-		if (post!=null)
-			this.event.addPostItem (new Post(post, postTitle, postLabel, postCreator), eventURI);
-		if(depiction!=null)
-			this.event.addPhotoItem (new Photo(depiction));
-	} else if (this.event.URI==eventURI) {
-		if (participant!=null)
-			this.event.addParticipantItem (new Participant(participant, participantName));
-		if (post!=null)
-			this.event.addPostItem (new Post(post, postTitle, postLabel, postCreator), eventURI);
-		if(depiction!=null)
-			this.event.addPhotoItem (new Photo(depiction));
-	}
+	if (this.event==null)
+		this.event=new Event(eventURI, row);
+	else if (this.event.URI==eventURI)
+		setEventProperties(this.event, row);
 	else {
-		var eventDate = new Date(timeStart);
+		var eventDate = this.event.timeStart;
 		if (this.currentDate > eventDate) {
 			this.processor.processPast(this.event);
 		} else {
@@ -219,13 +215,7 @@ EventQueryProcessor.prototype.process = function(row)
 				this.processor.processFuture(this.event);
 			}
 		}
-		this.event=new Event(eventURI, eventName, logo, timeStart, timeEnd, address);
-		if (participant!=null)
-			this.event.addParticipantItem (new Participant(participant, participantName));
-		if (post!=null)
-			this.event.addPostItem (new Post(post, postTitle, postLabel, postCreator), eventURI);
-		if(depiction!=null)
-			this.event.addPhotoItem (new Photo(depiction));
+		this.event=new Event(eventURI, row);
 	}
 };
 
