@@ -242,3 +242,71 @@ EventQueryProcessor.prototype.flush = function()
 	this.processor.flush();	
 };
 
+/**
+ * A query processor to be used to retrieve an event with a specified URI.
+ * 
+ * @param eventUri the uri of the event to be retrieved
+ * @param eventHandler a function which will be called to handle the retrieved event, it must take the event as solely parameter
+ * @param noSuchEventHandler a function which will be called when the event is not found
+ */
+function SingleEventQueryProcessor(eventURI, eventHandler, noSuchEventHandler){
+	this.query = "PREFIX locn:<http://www.w3.org/ns/locn#>\n"+
+	"PREFIX wsg84:<http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
+	"PREFIX foaf:<http://xmlns.com/foaf/0.1/>\n"+
+	"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>\n"+
+	"PREFIX event:<http://purl.org/NET/c4dm/event.owl#>\n"+
+	"PREFIX time:<http://www.w3.org/2006/time#>\n"+
+	"PREFIX sioc:<http://rdfs.org/sioc/ns#>\n"+
+	"PREFIX dc:<http://purl.org/dc/elements/1.1/>\n";
+		
+	this.query+="SELECT DISTINCT ?agent ?post ?depiction ?itemlabel ?logo ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
+	
+	this.query+="\t<"+eventURI+"> locn:location ?site .\n"+
+	"\t<"+eventURI+"> rdfs:label ?itemlabel .\n" +
+	"\t<"+eventURI+"> event:time ?t .\n"+
+	"\t<"+eventURI+"> event:agent ?agent .\n"+
+	"\t?t time:hasBeginning ?hasB .\n"+
+	"\t?hasB time:inXSDDateTime ?timeStart .\n"+
+	"\t?site locn:address ?a .\n"+
+	"\t?a locn:fullAddress ?address .\n"+
+	"\tOPTIONAL {?agent rdfs:label ?partname} .\n"+
+	"\tOPTIONAL {<"+eventURI+"> foaf:depiction ?depiction} .\n"+
+	"\tOPTIONAL {?hasB time:xsdDateTime ?timeEnd} .\n"+
+	"\tOPTIONAL {<"+eventURI+"> foaf:logo ?logo} .\n"+
+	"\tOPTIONAL {?post sioc:about <"+eventURI+"> .\n"+
+    "\t\t?post dc:title ?ptitle .\n"+
+    "\t\t?post rdfs:label ?plabel .\n"+
+    "\t\t?post sioc:has_creator ?pc .\n"+
+    "\t\t?pc rdfs:label ?pcreat .\n"+
+	"\t} .\n"+
+	"} ORDER BY DESC(?timeStart)";	
+
+	this.eventURI=eventURI;
+	this.eventHandler=eventHandler;
+	this.noSuchEventHandler=noSuchEventHandler;
+}
+
+
+/**
+ * Process a query result-set row.
+ */
+SingleEventQueryProcessor.prototype.process = function(row)
+{
+	if (this.event==null)
+		this.event=new Event(this.eventURI, row);
+	else
+		setEventProperties(this.event, row);
+};
+
+/**
+ * Processing ended, flush the last event
+ */
+SingleEventQueryProcessor.prototype.flush = function()
+{
+	if(this.event != null)
+		this.eventHandler(this.event);
+	else
+		this.noSuchEventHandler();
+	this.event=null;
+};
+
