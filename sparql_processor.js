@@ -70,7 +70,7 @@ function getHTTPObject(){
 					xmlhttp=new XMLHttpRequest();
 				}
 				catch(err3){
-					xmlhttp=false
+					xmlhttp=false;
 				}
 			}			
 		}

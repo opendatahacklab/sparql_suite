@@ -84,6 +84,8 @@ function Event(uri, row){
 	this.timeStart=row.timeStart.value;
 	this.timeEnd=row.timeEnd==null ? null : row.timeEnd.value;
 	this.address=row.address.value;
+	this.description=row.description==null ? null : row.description.value;
+	this.homepage=this.homepage==null ? null : row.homepage.value;
 	this.participants=[];
 	this.posts=[];
 	this.photos=[];
@@ -159,7 +161,7 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
 	if (eventQueryProcessor.additionalPrefixes!=null)
 		this.query+=eventQueryProcessor.additionalPrefixes+"\n";
 	
-	this.query+="SELECT DISTINCT ?item ?agent ?post ?depiction ?itemlabel ?logo ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
+	this.query+="SELECT DISTINCT ?item ?agent ?post ?depiction ?itemlabel ?logo ?timeStart ?address ?description ?homepage ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
 
 	if (eventQueryProcessor.additionalConstraints!=null)
 		this.query+="\t"+eventQueryProcessor.additionalConstraints+" .\n";
@@ -172,6 +174,8 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
 	"\t?hasB time:inXSDDateTime ?timeStart .\n"+
 	"\t?site locn:address ?a .\n"+
 	"\t?a locn:fullAddress ?address .\n"+
+	"\tOPTIONAL {?item rdfs:comment ?description} .\n"+
+	"\tOPTIONAL {?item foaf:homepage ?homepage} .\n"+
 	"\tOPTIONAL {?agent rdfs:label ?partname} .\n"+
 	"\tOPTIONAL {?item foaf:depiction ?depiction} .\n"+
 	"\tOPTIONAL {?hasB time:xsdDateTime ?timeEnd} .\n"+
