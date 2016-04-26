@@ -274,8 +274,8 @@ function SingleEventQueryProcessor(eventURI, eventHandler, noSuchEventHandler){
 	"\t?site locn:address ?a .\n"+
 	"\t?a locn:fullAddress ?address .\n"+
 	"\tOPTIONAL {?agent rdfs:label ?partname} .\n"+
-	"\tOPTIONAL {?item rdfs:comment ?description} .\n"+
-	"\tOPTIONAL {?item foaf:homepage ?homepage} .\n"+
+	"\tOPTIONAL {<"+eventURI+"> rdfs:comment ?description} .\n"+
+	"\tOPTIONAL {<"+eventURI+"> foaf:homepage ?homepage} .\n"+
 	"\tOPTIONAL {<"+eventURI+"> foaf:depiction ?depiction} .\n"+
 	"\tOPTIONAL {?hasB time:xsdDateTime ?timeEnd} .\n"+
 	"\tOPTIONAL {<"+eventURI+"> foaf:logo ?logo} .\n"+
