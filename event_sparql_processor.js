@@ -263,7 +263,7 @@ function SingleEventQueryProcessor(eventURI, eventHandler, noSuchEventHandler){
 	"PREFIX sioc:<http://rdfs.org/sioc/ns#>\n"+
 	"PREFIX dc:<http://purl.org/dc/elements/1.1/>\n";
 		
-	this.query+="SELECT DISTINCT ?agent ?post ?depiction ?itemlabel ?logo ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
+	this.query+="SELECT DISTINCT ?description ?agent ?post ?depiction ?itemlabel ?logo ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
 	
 	this.query+="\t<"+eventURI+"> locn:location ?site .\n"+
 	"\t<"+eventURI+"> rdfs:label ?itemlabel .\n" +
