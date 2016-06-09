@@ -169,7 +169,7 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
 	this.query+="\t?item locn:location ?site .\n"+
 	"\t?item rdfs:label ?itemlabel .\n" +
 	"\t?item event:time ?t .\n"+
-	"\t?item event:agent ?agent .\n"+
+	"\tOPTIONAL {?item event:agent ?agent} .\n"+
 	"\t?t time:hasBeginning ?hasB .\n"+
 	"\t?hasB time:inXSDDateTime ?timeStart .\n"+
 	"\t?site locn:address ?a .\n"+
@@ -187,7 +187,7 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
     "\t\t?pc rdfs:label ?pcreat .\n"+
 	"\t} .\n"+
 	"} ORDER BY DESC(?timeStart) ?item";	
-	
+		
 	this.event=null;
 	this.processor=eventQueryProcessor;
 	this.currentDate=currentDate ==null ? new Date() : currentDate;
@@ -227,7 +227,8 @@ EventQueryProcessor.prototype.process = function(row)
  * Processing ended, flush the last event
  */
 EventQueryProcessor.prototype.flush = function()
-{
+{	
+
 	if(this.event != null)
 	{
 		var eventDate = new Date(this.event.timeStart);
@@ -268,7 +269,7 @@ function SingleEventQueryProcessor(eventURI, eventHandler, noSuchEventHandler){
 	this.query+="\t<"+eventURI+"> locn:location ?site .\n"+
 	"\t<"+eventURI+"> rdfs:label ?itemlabel .\n" +
 	"\t<"+eventURI+"> event:time ?t .\n"+
-	"\t<"+eventURI+"> event:agent ?agent .\n"+
+	"\tOPTIONAL {<"+eventURI+"> event:agent ?agent} .\n"+
 	"\t?t time:hasBeginning ?hasB .\n"+
 	"\t?hasB time:inXSDDateTime ?timeStart .\n"+
 	"\t?site locn:address ?a .\n"+
