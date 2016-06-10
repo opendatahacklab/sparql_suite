@@ -34,13 +34,15 @@ processEventFunction = function(event){
 	var addressCell = document.createElement('td');
 	rowElement.appendChild(addressCell);
 	addressCell.appendChild(document.createTextNode(event.address));
+
 	
 	var locationCell = document.createElement('td');
 	rowElement.appendChild(locationCell);
 	if (event.locationName!=null)
 		locationCell.appendChild(document.createTextNode(event.locationName));
 	else
-		locationCell.appendChild(document.createTextNode('NA'));		
+		locationCell.appendChild(document.createTextNode('NA'));
+	console.log(event.eventName);		
 }
 
 testProcessor = new Object();

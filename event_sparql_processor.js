@@ -58,6 +58,7 @@ var setEventProperties= function(event, row){
 	var postLabel = row.plabel==null ? null : row.plabel.value;
 	var postCreator = row.pcreat==null ? null : row.pcreat.value;
 	var depiction = row.depiction==null ? null : row.depiction.value;
+	var locationName = row.site == null ? null : row.site.value;
 
 	if (participant!=null)
 		event.addParticipantItem (new Participant(participant, participantName));
@@ -86,6 +87,7 @@ function Event(uri, row){
 	this.address=row.address.value;
 	this.description=row.description==null ? null : row.description.value;
 	this.homepage=this.homepage==null ? null : row.homepage.value;
+	this.locationName = this.locationName == null ? null : row.site.value;
 	this.participants=[];
 	this.posts=[];
 	this.photos=[];
@@ -161,7 +163,7 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
 	if (eventQueryProcessor.additionalPrefixes!=null)
 		this.query+=eventQueryProcessor.additionalPrefixes+"\n";
 	
-	this.query+="SELECT DISTINCT ?item ?agent ?post ?depiction ?itemlabel ?logo ?timeStart ?address ?description ?homepage ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
+	this.query+="SELECT DISTINCT ?item ?agent ?post ?depiction ?itemlabel ?site ?logo ?timeStart ?address ?description ?homepage ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
 
 	if (eventQueryProcessor.additionalConstraints!=null)
 		this.query+="\t"+eventQueryProcessor.additionalConstraints+" .\n";
@@ -264,7 +266,7 @@ function SingleEventQueryProcessor(eventURI, eventHandler, noSuchEventHandler){
 	"PREFIX sioc:<http://rdfs.org/sioc/ns#>\n"+
 	"PREFIX dc:<http://purl.org/dc/elements/1.1/>\n";
 		
-	this.query+="SELECT DISTINCT ?description ?agent ?post ?depiction ?itemlabel ?logo ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
+	this.query+="SELECT DISTINCT ?description ?agent ?post ?depiction ?itemlabel ?logo ?site ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
 	
 	this.query+="\t<"+eventURI+"> locn:location ?site .\n"+
 	"\t<"+eventURI+"> rdfs:label ?itemlabel .\n" +
