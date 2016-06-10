@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Location Name Test</title>
+<script type="text/javascript" src="sparql_processor.js"></script>
+<script type="text/javascript" src="event_sparql_processor.js"></script>
+</head>
+<body>
+	<h1>Location Name Test</h1>
+	<p>
+		Questa pagina &egrave; stata realizzata per testare la corretta
+		implementazione dell'attributo <em>name</em> nelle location del
+		<code>EventQueryProcessor</code>.
+	</p>
+
+	<table id="loctable">
+		<tr>
+			<th>Evento</th>
+			<th>Indirizzo</th>
+			<th>Location</th>
+		</tr>
+	</table>
+	<script>
+var tableElement = document.getElementById('loctable');
+var testProcessor = new Object();
+processEventFunction = function(event){
+	var rowElement = document.createElement('tr');
+	tableElement.appendChild(rowElement);
+	var eventCell = document.createElement('td');
+	rowElement.appendChild(eventCell);
+	eventCell.appendChild(document.createTextNode(event.eventName));
+	
+	var addressCell = document.createElement('td');
+	rowElement.appendChild(addressCell);
+	addressCell.appendChild(document.createTextNode(event.address));
+	
+	var locationCell = document.createElement('td');
+	rowElement.appendChild(locationCell);
+	if (event.locationName!=null)
+		locationCell.appendChild(document.createTextNode(event.locationName));
+	else
+		locationCell.appendChild(document.createTextNode('NA'));		
+}
+
+testProcessor = new Object();
+
+testProcessor.processPast = function(event) {
+	processEventFunction(event, false);
+};
+
+testProcessor.processNext = function(event) {
+	processEventFunction(event, true);
+};
+
+testProcessor.processFuture = function(event) {
+	processEventFunction(event, false);
+};
+
+testProcessor.flush = function() {};
+
+testProcessor.flush = function(){}
+sparql_query("http://dydra.com/cristianolongo/agenda-unica-ct/sparql",
+		new EventQueryProcessor(testProcessor));
+	</script>
+</body>

@@ -120,7 +120,8 @@ LOCNQueryProcessor.prototype.process = function(row){
  * Processing ended, flush the last location
  */
 LOCNQueryProcessor.prototype.flush = function(){
-	this.processor.process(this.location);
+	if (this.location!=null)
+		this.processor.process(this.location);
 	this.location=null;
 	this.processor.flush();	
 };
