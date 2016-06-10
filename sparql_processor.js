@@ -48,8 +48,6 @@ function sparql_query(endpoint, queryProcessor){
 			}
 		}	
 	};
-	window.alert('query '+queryProcessor.query);
-	window.alert('sending '+querypart);
 	xmlhttp.send(querypart);
 }
 
