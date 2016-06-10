@@ -25,7 +25,7 @@ function htmlentities(str) {
  * @param queryProcessor is an object delegate to specify the uery and handle the query result
  */
 function sparql_query(endpoint, queryProcessor){
-	var querypart = "query=" + escape(queryProcessor.query);
+	var querypart = "query=" + encodeURIComponent(queryProcessor.query);
 	// Get our HTTP request object.
 	var xmlhttp = getHTTPObject();
 	//Include POST OR GET
@@ -48,6 +48,8 @@ function sparql_query(endpoint, queryProcessor){
 			}
 		}	
 	};
+	window.alert('query '+queryProcessor.query);
+	window.alert('sending '+querypart);
 	xmlhttp.send(querypart);
 }
 
