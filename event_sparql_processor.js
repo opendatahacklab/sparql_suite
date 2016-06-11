@@ -41,6 +41,28 @@ function Post(uri, title, label, creator){
 }
 
 /**
+ * Get the Location Name from the URI 
+ *
+ */
+
+function getLocationName(uri)
+{
+	var locnName = "";
+
+	var locnNameCache;
+
+	locnNameCache = String.split(uri, "/")[4];
+	locnNameCache = String.split(locnNameCache, "+");
+	for(var i in locnNameCache)
+	{
+		locnName = locnName + locnNameCache[i] + " "
+	}
+
+	return locnName;
+
+}
+
+/**
  * A depiction of some thing
 */
 function Photo(depiction){
@@ -58,7 +80,7 @@ var setEventProperties= function(event, row){
 	var postLabel = row.plabel==null ? null : row.plabel.value;
 	var postCreator = row.pcreat==null ? null : row.pcreat.value;
 	var depiction = row.depiction==null ? null : row.depiction.value;
-	var locationName = row.site == null ? null : row.site.value;
+	var locationName = row.item == null ? null : row.item.value;
 
 	if (participant!=null)
 		event.addParticipantItem (new Participant(participant, participantName));
@@ -87,7 +109,7 @@ function Event(uri, row){
 	this.address=row.address.value;
 	this.description=row.description==null ? null : row.description.value;
 	this.homepage=this.homepage==null ? null : row.homepage.value;
-	this.locationName = this.locationName == null ? null : row.site.value;
+	this.locationName = getLocationName(row.site.value);
 	this.participants=[];
 	this.posts=[];
 	this.photos=[];
@@ -266,7 +288,7 @@ function SingleEventQueryProcessor(eventURI, eventHandler, noSuchEventHandler){
 	"PREFIX sioc:<http://rdfs.org/sioc/ns#>\n"+
 	"PREFIX dc:<http://purl.org/dc/elements/1.1/>\n";
 		
-	this.query+="SELECT DISTINCT ?description ?agent ?post ?depiction ?itemlabel ?logo ?site ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
+	this.query+="SELECT DISTINCT ?description ?agent ?post ?depiction ?site ?itemlabel ?logo ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
 	
 	this.query+="\t<"+eventURI+"> locn:location ?site .\n"+
 	"\t<"+eventURI+"> rdfs:label ?itemlabel .\n" +
