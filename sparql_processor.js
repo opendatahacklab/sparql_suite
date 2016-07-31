@@ -23,6 +23,8 @@ function htmlentities(str) {
  *
  * @param endpoint URI of the sparql endpoint 
  * @param queryProcessor is an object delegate to specify the uery and handle the query result
+ * 
+ * @return the performed query, for debugging purposes
  */
 function sparql_query(endpoint, queryProcessor){
 	var querypart = "query=" + encodeURIComponent(queryProcessor.query);
@@ -49,6 +51,7 @@ function sparql_query(endpoint, queryProcessor){
 		}	
 	};
 	xmlhttp.send(querypart);
+	return queryProcessor.query;
 }
 
 //Request HTTP
