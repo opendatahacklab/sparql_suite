@@ -81,6 +81,7 @@ var setEventProperties= function(event, row){
 	var postCreator = row.pcreat==null ? null : row.pcreat.value;
 	var depiction = row.depiction==null ? null : row.depiction.value;
 	var locationName = row.item == null ? null : row.item.value;
+	var eventPlace = row.eventPlace == null ? null : row.eventPlace.value;
 
 	if (participant!=null)
 		event.addParticipantItem (new Participant(participant, participantName));
@@ -109,7 +110,9 @@ function Event(uri, row){
 	this.address=row.address.value;
 	this.description=row.description==null ? null : row.description.value;
 	this.homepage=this.homepage==null ? null : row.homepage.value;
-	this.locationName = getLocationName(row.site.value);
+	this.locationName = row.address.value; //getLocationName(row.site.value);
+	//Will be located the event place
+	this.eventPlace = row.eventPlace.value;
 	this.participants=[];
 	this.posts=[];
 	this.photos=[];
@@ -185,7 +188,7 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
 	if (eventQueryProcessor.additionalPrefixes!=null)
 		this.query+=eventQueryProcessor.additionalPrefixes+"\n";
 	
-	this.query+="SELECT DISTINCT ?item ?agent ?post ?depiction ?itemlabel ?site ?logo ?timeStart ?address ?description ?homepage ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
+	this.query+="SELECT DISTINCT ?item ?agent ?post ?eventPlace ?depiction ?itemlabel ?site ?logo ?timeStart ?address ?description ?homepage ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
 
 	if (eventQueryProcessor.additionalConstraints!=null)
 		this.query+="\t"+eventQueryProcessor.additionalConstraints+" .\n";
@@ -194,6 +197,7 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
 	"\t?item rdfs:label ?itemlabel .\n" +
 	"\t?item event:time ?t .\n"+
 	"\tOPTIONAL {?item event:agent ?agent} .\n"+
+	"\tOPTIONAL {?site rdfs:label ?eventPlace} .\n"+  //Optional because the event could not have a event place
 	"\t?t time:hasBeginning ?hasB .\n"+
 	"\t?hasB time:inXSDDateTime ?timeStart .\n"+
 	"\t?site locn:address ?a .\n"+
@@ -288,11 +292,13 @@ function SingleEventQueryProcessor(eventURI, eventHandler, noSuchEventHandler){
 	"PREFIX sioc:<http://rdfs.org/sioc/ns#>\n"+
 	"PREFIX dc:<http://purl.org/dc/elements/1.1/>\n";
 		
-	this.query+="SELECT DISTINCT ?description ?agent ?post ?depiction ?site ?itemlabel ?logo ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
+	this.query+="SELECT DISTINCT ?description ?eventPlace ?agent ?post ?depiction ?site ?itemlabel ?logo ?timeStart ?address ?partname ?ptitle ?plabel ?pcreat WHERE {\n";
 	
 	this.query+="\t<"+eventURI+"> locn:location ?site .\n"+
 	"\t<"+eventURI+"> rdfs:label ?itemlabel .\n" +
 	"\t<"+eventURI+"> event:time ?t .\n"+
+	"\t?site rdfs:label ?locationName"+
+	"\tOPTIONAL {?site rdfs:label ?eventPlace} .\n"+	//Optional because the event could not have a event place
 	"\tOPTIONAL {<"+eventURI+"> event:agent ?agent} .\n"+
 	"\t?t time:hasBeginning ?hasB .\n"+
 	"\t?hasB time:inXSDDateTime ?timeStart .\n"+
