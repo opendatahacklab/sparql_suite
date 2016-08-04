@@ -41,28 +41,6 @@ function Post(uri, title, label, creator){
 }
 
 /**
- * Get the Location Name from the URI 
- *
- */
-
-function getLocationName(uri)
-{
-	var locnName = "";
-
-	var locnNameCache;
-
-	locnNameCache = String.split(uri, "/")[4];
-	locnNameCache = String.split(locnNameCache, "+");
-	for(var i in locnNameCache)
-	{
-		locnName = locnName + locnNameCache[i] + " "
-	}
-
-	return locnName;
-
-}
-
-/**
  * A depiction of some thing
 */
 function Photo(depiction){
@@ -112,7 +90,7 @@ function Event(uri, row){
 	this.homepage=this.homepage==null ? null : row.homepage.value;
 	this.locationName = row.address.value; //getLocationName(row.site.value);
 	//Will be located the event place
-	this.eventPlace = row.eventPlace.value;
+	this.eventPlace = row.eventPlace==null ? null : row.eventPlace.value;
 	this.participants=[];
 	this.posts=[];
 	this.photos=[];
