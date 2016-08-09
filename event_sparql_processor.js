@@ -275,7 +275,7 @@ function SingleEventQueryProcessor(eventURI, eventHandler, noSuchEventHandler){
 	this.query+="\t<"+eventURI+"> locn:location ?site .\n"+
 	"\t<"+eventURI+"> rdfs:label ?itemlabel .\n" +
 	"\t<"+eventURI+"> event:time ?t .\n"+
-	"\t?site rdfs:label ?locationName"+
+	"\tOPTIONAL {?site rdfs:label ?locationName}"+
 	"\tOPTIONAL {?site rdfs:label ?eventPlace} .\n"+	//Optional because the event could not have a event place
 	"\tOPTIONAL {<"+eventURI+"> event:agent ?agent} .\n"+
 	"\t?t time:hasBeginning ?hasB .\n"+
