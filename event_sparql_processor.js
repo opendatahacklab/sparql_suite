@@ -153,7 +153,7 @@ Event.prototype.addPhotoItem = function (item) {
  *   - the method processFuture(event), invoked for each future event, except for the next;
  *   - the method flush(), invoked all the Event instances have been processed.
  */
-function EventQueryProcessor(eventQueryProcessor, currentDate){
+function EventQueryProcessor(eventQueryProcessor, currentDate, minDate, maxDate){
 	this.query = "PREFIX locn:<http://www.w3.org/ns/locn#>\n"+
 	"PREFIX wsg84:<http://www.w3.org/2003/01/geo/wgs84_pos#>\n"+
 	"PREFIX foaf:<http://xmlns.com/foaf/0.1/>\n"+
@@ -162,7 +162,17 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
 	"PREFIX time:<http://www.w3.org/2006/time#>\n"+
 	"PREFIX sioc:<http://rdfs.org/sioc/ns#>\n"+
 	"PREFIX dc:<http://purl.org/dc/elements/1.1/>\n";
+	"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>";
 	
+	if(minDate==null || minDate=='')
+		{
+		minDate='2000-01-01T00:00:00Z';
+		}
+	if(maxDate==null || maxDate=='')
+	{
+		maxDate='3000-01-01T00:00:00Z';
+	}
+
 	if (eventQueryProcessor.additionalPrefixes!=null)
 		this.query+=eventQueryProcessor.additionalPrefixes+"\n";
 	
@@ -192,6 +202,7 @@ function EventQueryProcessor(eventQueryProcessor, currentDate){
     "\t\t?post sioc:has_creator ?pc .\n"+
     "\t\t?pc rdfs:label ?pcreat .\n"+
 	"\t} .\n"+
+	"FILTER (xsd:dateTime(?timeStart) > '"+minDate+"'^^xsd:dateTime && xsd:dateTime(?timeStart) < '"+maxDate+"'^^xsd:dateTime) .\n"+
 	"} ORDER BY DESC(?timeStart) ?item";	
 		
 	this.event=null;
