@@ -226,7 +226,9 @@ EventQueryProcessor.prototype.process = function(row)
 		setEventProperties(this.event, row);
 	else {
 		var eventDate = this.event.timeStart;
-		if (this.currentDate > eventDate) {
+		var eventTime = (new Date(eventDate)).getTime();
+		window.alert(eventTime);
+		if (this.currentDate.getTime() > eventTime) {
 			this.processor.processPast(this.event);
 		} else {
 			if (this.isNextEvent == false) {
