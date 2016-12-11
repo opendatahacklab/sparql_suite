@@ -161,17 +161,18 @@ function EventQueryProcessor(eventQueryProcessor, currentDate, minDate, maxDate)
 	"PREFIX event:<http://purl.org/NET/c4dm/event.owl#>\n"+
 	"PREFIX time:<http://www.w3.org/2006/time#>\n"+
 	"PREFIX sioc:<http://rdfs.org/sioc/ns#>\n"+
-	"PREFIX dc:<http://purl.org/dc/elements/1.1/>\n";
+	"PREFIX dc:<http://purl.org/dc/elements/1.1/>\n"+
 	"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>";
 	
 	if(minDate==null || minDate=='')
-		{
-		minDate='2000-01-01T00:00:00Z';
-		}
+		minDateToUse= '2000-01-01T00:00:00Z';
+	else
+		minDateToUse= minDate;
+	
 	if(maxDate==null || maxDate=='')
-	{
-		maxDate='3000-01-01T00:00:00Z';
-	}
+		maxDateToUse='3000-01-01T00:00:00Z';
+	else
+		maxDateToUse=maxDate;
 
 	if (eventQueryProcessor.additionalPrefixes!=null)
 		this.query+=eventQueryProcessor.additionalPrefixes+"\n";
@@ -201,9 +202,10 @@ function EventQueryProcessor(eventQueryProcessor, currentDate, minDate, maxDate)
     "\t\t?post rdfs:label ?plabel .\n"+
     "\t\t?post sioc:has_creator ?pc .\n"+
     "\t\t?pc rdfs:label ?pcreat .\n"+
-	"\t} .\n"+
-	"FILTER (xsd:dateTime(?timeStart) > '"+minDate+"'^^xsd:dateTime && xsd:dateTime(?timeStart) < '"+maxDate+"'^^xsd:dateTime) .\n"+
-	"} ORDER BY DESC(?timeStart) ?item";	
+	"\t} \n";
+	if (minDate!=null || maxDate!=null)
+	this.query+=" . FILTER (xsd:dateTime(?timeStart) > '"+minDateToUse+"'^^xsd:dateTime && xsd:dateTime(?timeStart) < '"+maxDateToUse+"'^^xsd:dateTime) .\n";
+	this.query+="} ORDER BY DESC(?timeStart) ?item";	
 		
 	this.event=null;
 	this.processor=eventQueryProcessor;
