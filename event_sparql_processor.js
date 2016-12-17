@@ -205,12 +205,12 @@ function EventQueryProcessor(eventQueryProcessor, currentDate, minDate, maxDate)
 	"\t} \n";
 	if (minDate!=null || maxDate!=null)
 	this.query+=" . FILTER (xsd:dateTime(?timeStart) > '"+minDateToUse+"'^^xsd:dateTime && xsd:dateTime(?timeStart) < '"+maxDateToUse+"'^^xsd:dateTime) .\n";
-	this.query+="} ORDER BY DESC(?timeStart) ?item";	
+	this.query+="} ORDER BY ASC(?timeStart) ?item";	
 		
 	this.event=null;
 	this.processor=eventQueryProcessor;
 	this.currentDate=currentDate ==null ? new Date() : currentDate;
-	this.isNextEvent=false;
+	this.nextEventProcessed=false;
 }
 
 
@@ -232,9 +232,9 @@ EventQueryProcessor.prototype.process = function(row)
 		if (this.currentDate.getTime() > eventTime) {
 			this.processor.processPast(this.event);
 		} else {
-			if (this.isNextEvent == false) {
+			if (this.nextEventProcessed == false) {
 				this.processor.processNext(this.event);
-				this.nextEvent=true;
+				this.nextEventProcessed=true;
 			} else {
 				this.processor.processFuture(this.event);
 			}
@@ -255,9 +255,9 @@ EventQueryProcessor.prototype.flush = function()
 		if (this.currentDate > eventDate) {
 			this.processor.processPast(this.event);
 		} else {
-			if (this.isNextEvent == false) {
+			if (this.nextEventProcessed == false) {
 				this.processor.processNext(this.event);
-				this.nextEvent=true;
+				this.nextEventProcessed=true;
 			} else {
 				this.processor.processFuture(this.event);
 			}
