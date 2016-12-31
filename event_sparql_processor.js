@@ -9,6 +9,7 @@
  *
  * @author Cristiano Longo
  * @author Mirko Raimondo Aiello
+ * @author Federico Frasca
  */
 
 //some objects related to events
@@ -164,15 +165,16 @@ function EventQueryProcessor(eventQueryProcessor, currentDate, minDate, maxDate)
 	"PREFIX dc:<http://purl.org/dc/elements/1.1/>\n"+
 	"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>";
 	
+	var dateFormat = "YYYY-MM-DDThh:mm:ss"; //see http://www.w3schools.com/XML/schema_dtypes_date.asp
 	if(minDate==null || minDate=='')
-		minDateToUse= '2000-01-01T00:00:00Z';
+		minDateToUse='2000-01-01T00:00:00Z';
 	else
-		minDateToUse= minDate;
+		minDateToUse=minDate.toISOString();
 	
 	if(maxDate==null || maxDate=='')
 		maxDateToUse='3000-01-01T00:00:00Z';
 	else
-		maxDateToUse=maxDate;
+		maxDateToUse=maxDate.toISOString();
 
 	if (eventQueryProcessor.additionalPrefixes!=null)
 		this.query+=eventQueryProcessor.additionalPrefixes+"\n";
@@ -203,14 +205,14 @@ function EventQueryProcessor(eventQueryProcessor, currentDate, minDate, maxDate)
     "\t\t?post sioc:has_creator ?pc .\n"+
     "\t\t?pc rdfs:label ?pcreat .\n"+
 	"\t} \n";
-	if (minDate!=null || maxDate!=null)
-	this.query+=" . FILTER (xsd:dateTime(?timeStart) > '"+minDateToUse+"'^^xsd:dateTime && xsd:dateTime(?timeStart) < '"+maxDateToUse+"'^^xsd:dateTime) .\n";
-	this.query+="} ORDER BY DESC(?timeStart) ?item";	
-		
+	if (minDate!==null || maxDate!==null)
+		this.query+=" . FILTER (xsd:dateTime(?timeStart) > '"+minDateToUse+"'^^xsd:dateTime && xsd:dateTime(?timeStart) < '"+maxDateToUse+"'^^xsd:dateTime) .\n";
+	this.query+="} ORDER BY ASC(?timeStart) ?item";	
+
 	this.event=null;
 	this.processor=eventQueryProcessor;
 	this.currentDate=currentDate ==null ? new Date() : currentDate;
-	this.isNextEvent=false;
+	this.nextEventProcessed=false;
 }
 
 
@@ -232,9 +234,9 @@ EventQueryProcessor.prototype.process = function(row)
 		if (this.currentDate.getTime() > eventTime) {
 			this.processor.processPast(this.event);
 		} else {
-			if (this.isNextEvent == false) {
+			if (this.nextEventProcessed == false) {
 				this.processor.processNext(this.event);
-				this.nextEvent=true;
+				this.nextEventProcessed=true;
 			} else {
 				this.processor.processFuture(this.event);
 			}
@@ -255,9 +257,9 @@ EventQueryProcessor.prototype.flush = function()
 		if (this.currentDate > eventDate) {
 			this.processor.processPast(this.event);
 		} else {
-			if (this.isNextEvent == false) {
+			if (this.nextEventProcessed == false) {
 				this.processor.processNext(this.event);
-				this.nextEvent=true;
+				this.nextEventProcessed=true;
 			} else {
 				this.processor.processFuture(this.event);
 			}
@@ -339,3 +341,186 @@ SingleEventQueryProcessor.prototype.flush = function()
 	this.event=null;
 };
 
+
+// Draw events as table
+
+/**
+ * Create a row element representing an event
+ * 
+ * @param event the event
+ * @param cssClassPrefix the prefix which will be used to the generated table row and cells. 
+ * The css class of the table row will be <cssClassPrefix>Row, whereas the ones for 
+ * date, time, place, title and details <cssClassPrefix>Date, <cssClassPrefix>Time, <cssClassPrefix>Place,
+ * <cssClassPrefix>Title and <cssClassPrefix>Details, respectively.
+
+ */
+var createEventTableRow = function(event, cssClassPrefix) {
+
+	function insertZero(x) {
+
+		if (x == "0" || x == "1" || x == "2" || x == "3" || x == "4"
+				|| x == "5" || x == "6" || x == "7" || x == "8"
+				|| x == "9") {
+			x = "0" + x;
+		}
+		return x;
+	}
+	;
+
+	var trevents = document.createElement("tr");
+	if (cssClassPrefix!==undefined)
+		trevents.setAttribute("class",cssClassPrefix+"Row");
+	
+	var tdData = document.createElement("td");
+	var data = new Date(event.timeStart);
+	var giorno = data.getDate();
+	giorno = insertZero(giorno);
+	var mese = data.getMonth() + 1;
+	mese = insertZero(mese);
+	var stringaData = document.createTextNode(giorno + "/" + mese + "/"
+			+ data.getFullYear());
+	tdData.appendChild(stringaData);
+	if (cssClassPrefix!==undefined)
+		tdData.setAttribute('class', cssClassPrefix+'Date');
+	trevents.appendChild(tdData);
+
+
+	var tdOra = document.createElement("td");
+	var data = new Date(event.timeStart);
+	var minuti = data.getMinutes();
+	minuti = insertZero(minuti);
+	var ore = data.getHours();
+	ore = insertZero(ore);
+	var ora = document.createTextNode(ore + ":" + minuti);
+	tdOra.appendChild(ora);
+	if (cssClassPrefix!==undefined)
+		tdOra.setAttribute('class', cssClassPrefix+'Time');
+	trevents.appendChild(tdOra);
+
+	var tdLocn = document.createElement("td");
+	if (cssClassPrefix!==undefined)
+		tdLocn.setAttribute("class", cssClassPrefix+"Place");
+//Verify the prescence of the event place
+
+	event.eventPlace !== null ?  tdLocn.appendChild(document.createTextNode(event.eventPlace)) : tdLocn.appendChild(document.createTextNode("")); 
+
+	trevents.appendChild(tdLocn);	
+	
+	var tdTitolo = document.createElement("td");
+	if (cssClassPrefix!==undefined)
+		tdTitolo.setAttribute("class",cssClassPrefix+"Title");
+	var tdTestoTitolo = document.createTextNode(event.eventName);
+	tdTitolo.appendChild(tdTestoTitolo);
+		
+	trevents.appendChild(tdTitolo);
+
+	var tdLink = document.createElement("td");
+	if (cssClassPrefix!==undefined)
+		tdLink.setAttribute("class",cssClassPrefix+"Details");
+	var a = document.createElement("a");
+	a.href = "eventDetails.php?iri=" + encodeURIComponent(event.URI);
+	var lente = document.createElement("img");
+	lente.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Loupe.svg/58px-Loupe.svg.png";
+	lente.style.height = "1em";
+	a.appendChild(lente);
+	tdLink.appendChild(a);
+	trevents.appendChild(tdLink);
+	return trevents;
+};
+
+/**
+ * A function to create a table element with a caption but no rows
+ * 
+ * @param documet the HTML document
+ * @param caption the table caption
+ * @param cssClassPrefix the prefix which will be used to the generate table and table elements. 
+ * The css class of the table will be <cssClassPrefix>Table, whereas the one for the caption element
+ * will be <cssClassPrefix>Caption. 
+ */ 
+var createEmptyTable = function (caption, cssClassPrefix) {
+	var table = document.createElement("table");
+	if (cssClassPrefix!==undefined)
+		table.setAttribute("class",cssClassPrefix+"Table");
+	var tableCaption = document.createElement("caption");
+	table.appendChild(tableCaption);
+	if (cssClassPrefix!==undefined)
+		tableCaption.setAttribute("class", cssClassPrefix+"Caption");
+	tableCaption.appendChild(document.createTextNode(caption));	
+	return table;
+}
+
+/**
+ * An processor to include events in a web page in ascending order.
+ * The following classes will be associated to the generate elements:
+ * <tableCssClass>Table for the main table element
+ * <tableCssClass>Caption for the table caption
+ * 
+ * @param documet the HTML document
+ * @param containerElement the parent element of the table which will be drawn
+ * @param caption the table caption
+ * @param cssClassPrefix the prefix which will be used to the generate table and table elements 
+ */
+function DrawTableEventProcessorAsc(container, caption, cssClassPrefix){
+	this.eventFound = false;
+	this.container = container;
+	
+	this.addRow = function(event){
+		if (!this.eventFound){
+			this.table = createEmptyTable(caption, cssClassPrefix);
+			this.container.appendChild(this.table);
+			this.eventFound = true;			
+		}
+		this.table.appendChild(createEventTableRow(event, cssClassPrefix));
+	}
+	
+	this.processPast = function(event) {
+		this.addRow(event);
+	};
+	this.processNext = function(event) {
+		this.addRow(event);
+	};
+	this.processFuture = function(event) {
+		this.addRow(event);
+	};
+	this.flush = function() {
+	};
+}
+
+/**
+ * An processor to include events in a web page in descending order.
+ * The following classes will be associated to the generate elements:
+ * <tableCssClass>Table for the main table element
+ * <tableCssClass>Caption for the table caption
+ * 
+ * @param documet the HTML document
+ * @param containerElement the parent element of the table which will be drawn
+ * @param caption the table caption
+ * @param cssClassPrefix the prefix which will be used to the generate table and table elements 
+ */
+function DrawTableEventProcessorDec(container, caption, cssClassPrefix){
+	this.lastRow = null;
+	this.container = container;
+	
+	this.addRow = function(event){
+		var row = createEventTableRow(event, cssClassPrefix);
+		if (this.lastRow==null){
+			this.table = createEmptyTable(caption, cssClassPrefix);
+			this.container.appendChild(this.table);
+			this.table.appendChild(row);
+		} else 
+			this.table.insertBefore(row, this.lastRow);
+		this.lastRow=row;
+	}
+	
+	this.processPast = function(event) {
+		this.addRow(event);
+	};
+	this.processNext = function(event) {
+		this.addRow(event);
+	};
+	this.processFuture = function(event) {
+		this.addRow(event);
+	};
+	this.flush = function() {
+	};
+}
