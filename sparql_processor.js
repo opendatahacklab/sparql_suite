@@ -77,6 +77,6 @@ function getHTTPObject(){
 				}
 			}			
 		}
-	};
+	}
 	return xmlhttp;
 }
