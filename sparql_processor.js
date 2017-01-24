@@ -29,7 +29,7 @@ function htmlentities(str) {
 function sparql_query(endpoint, queryProcessor){
 	var querypart = "query=" + encodeURIComponent(queryProcessor.query);
 	// Get our HTTP request object.
-	var xmlhttp = getHTTPObject();
+	var xmlhttp = new XMLHttpRequest();
 	//Include POST OR GET
 	xmlhttp.open('POST', endpoint, true); 
 	xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
