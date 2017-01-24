@@ -208,7 +208,6 @@ function EventQueryProcessor(eventQueryProcessor, currentDate, minDate, maxDate)
 	if (minDate!==null || maxDate!==null)
 		this.query+=" . FILTER (xsd:dateTime(?timeStart) > '"+minDateToUse+"'^^xsd:dateTime && xsd:dateTime(?timeStart) < '"+maxDateToUse+"'^^xsd:dateTime) .\n";
 	this.query+="} ORDER BY ASC(?timeStart) ?item";	
-
 	this.event=null;
 	this.processor=eventQueryProcessor;
 	this.currentDate=currentDate ==null ? new Date() : currentDate;
