@@ -69,7 +69,7 @@
 		library to query a SPARQL enpoint from javascript. You can use it in your web pages by adding
 		this line in the head section of your document:</p>
 		<pre>
-&lt;script src="http://dev.opendatasicilia.it/opendatahacklab/sparql_suite/sparql_processor.js"&gt;&lt;/script&gt;</pre>
+&lt;script src="http://opendatahacklab.org/sparql_suite/sparql_processor.js"&gt;&lt;/script&gt;</pre>
 	
 		<p>Mainly, the query functionality is provided by the function <code>sparql_query</code> 
 		with the following signature:</p>
@@ -118,8 +118,8 @@ sparql_query(endpoint, queryProcessor)</pre>
 		elements can be used to import the LOCN SPARQL processor library in your web page (we remark that
 		<code>locn_sparql_processor</code> requires <code>locn_processor</code>).</p>
 		<pre>
-&lt;script src="http://dev.opendatasicilia.it/opendatahacklab/sparql_suite/sparql_processor.js"&gt;&lt;/script&gt;
-&lt;script src="http://dev.opendatasicilia.it/opendatahacklab/sparql_suite/locn_sparql_processor.js"&gt;&lt;/script&gt;</pre>
+&lt;script src="http://opendatahacklab.org/opendatahacklab/sparql_suite/sparql_processor.js"&gt;&lt;/script&gt;
+&lt;script src="http://opendatahacklab.org/sparql_suite/locn_sparql_processor.js"&gt;&lt;/script&gt;</pre>
 		
 		<p>A <code>LOCNQueryProcessor</code>, to be used with the <code>sparl_query</code> function
 		defined in the <a href="#processor">SPARQL processing library</a>, can be instantiated as follows:</p>
@@ -166,8 +166,8 @@ var locnProcessor = new LOCNQueryProcessor(locationQueryProcessor)</pre>
 		<p>To use the DOAP SPARQL processor in your web page add the following elements in the 
 		head section of the page itself:</p>
 		<pre>
-&lt;script src="http://dev.opendatasicilia.it/opendatahacklab/sparql_suite/sparql_processor.js"&gt;&lt;/script&gt;
-&lt;script src="http://dev.opendatasicilia.it/opendatahacklab/sparql_suite/doap_sparql_processor.js"&gt;&lt;/script&gt;</pre>
+&lt;script src="http://opendatahacklab.org/sparql_suite/sparql_processor.js"&gt;&lt;/script&gt;
+&lt;script src="http://opendatahacklab.org/sparql_suite/doap_sparql_processor.js"&gt;&lt;/script&gt;</pre>
 
 		<p>A <code>DOAPProcessor</code> instance has to be customized by overriding its <code>processProject(p)</code> method,
 		where <code>p</code> is in turn an instance of the <code>Project</code> class. <code>Project</code> class
@@ -254,8 +254,8 @@ var locnProcessor = new LOCNQueryProcessor(locationQueryProcessor)</pre>
 		<p>To use the Event SPARQL processor in your web page add the following elements in the 
 		head section of the page itself:</p>
 		<pre>
-&lt;script src="http://dev.opendatasicilia.it/opendatahacklab/sparql_suite/sparql_processor.js"&gt;&lt;/script&gt;
-&lt;script src="http://dev.opendatasicilia.it/opendatahacklab/sparql_suite/event_sparql_processor.js"&gt;&lt;/script&gt;</pre>
+&lt;script src="http://opendatahacklab.org/sparql_suite/sparql_processor.js"&gt;&lt;/script&gt;
+&lt;script src="http://opendatahacklab.org/sparql_suite/event_sparql_processor.js"&gt;&lt;/script&gt;</pre>
 		
 		<p>The <a href="../events.html">events page</a> of the opendatahacklab web sites provide a
 		simple usage example of this processor.</p>
